@@ -25,6 +25,6 @@ import {
       
       const app = createApp ( store ) 
       
-      app.listen ( APP_PORT, () => console.log(`App listening on PORT ${APP_PORT}`) )
+      app.listen ( +APP_PORT, () => console.log(`App listening on PORT ${APP_PORT}`) )
       
    })()

@@ -16,7 +16,7 @@ router.post ('/register', guest, catchAsync ( async ( req, res ) => {
     const found = await User.exists ( { email } )
 
     if ( found ) {
-        throw new BadRequest ( 'Invalid Email' )
+        throw new BadRequest ( { status: 400, message: 'User already Exists' } )
     }
 
     const user =   await User.create ( { 

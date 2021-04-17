@@ -1,27 +1,63 @@
-import express, { RequestHandler } from 'express'
+import express from 'express'
 import session, { Store } from 'express-session'
 import { SESSION_OPTIONS } from './config'
-import { serverError, notFound } from './middleware'
+import { serverError } from './middleware'
 import { register } from './routes'
 
 
 
+
+export class App {
+
+  public app : express.Application
+
+  constructor ( 
+    app: express.Application,  
+    ) {
+    this.app = app 
+
+  }
+
+  private initializeHandlers ( handlers : any[]) {
+    handlers.forEach ( handler => this.app.use ( handler ) )
+  } 
+
+  public listen ( port : number, callback : () => void ) {
+    this.app.listen ( port || 3000, callback )
+  } 
+
+  public initializeModules ( modules: express.RequestHandler[] ) {
+    this.initializeHandlers ( modules )
+  }
+    
+  public initializeMiddleware ( middleware: express.RequestHandler[] ) {
+    this.initializeHandlers ( middleware ) 
+  }
+  
+  public initializeErrorHandlers ( errorHandlers: express.ErrorRequestHandler[] ) {
+    this.initializeHandlers ( errorHandlers )
+  }
+
+}
+
 export const createApp = ( store : Store ) => {
   
-  const app = express () 
+  const app = new App ( express () ) 
 
-  
-  app.use ( express.json() )
-  
-  app.use ( session ( { ...SESSION_OPTIONS, store } ) ) 
-  
-  const modules = [ register, serverError, notFound ]
+  const middleware = [
+    express.json(), 
+    session ( { ...SESSION_OPTIONS, store } )
+  ]
 
-  modules.forEach( module => {
-    
-    app.use ( module )
+  const errorHandlers = [ serverError ]
 
-  }) 
+  const modules = [ register ]
+  
+  app.initializeMiddleware ( middleware )
+  
+  app.initializeModules ( modules )
+
+  app.initializeErrorHandlers ( errorHandlers ) 
 
   return app 
   
