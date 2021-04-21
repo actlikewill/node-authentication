@@ -9,7 +9,7 @@ export const validate = async ( schema: ObjectSchema, payload: any ) => {
 
     catch ( error ) {
 
-        throw new BadRequest ( error )
+        throw new BadRequest ( { status: 400, message : error.message} )
 
     }
 }

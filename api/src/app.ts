@@ -1,8 +1,8 @@
 import express from 'express'
 import session, { Store } from 'express-session'
 import { SESSION_OPTIONS } from './config'
-import { serverError } from './middleware'
-import { register } from './routes'
+import { serverError, notFound } from './middleware'
+import routes from './routes'
 
 
 
@@ -26,15 +26,15 @@ export class App {
     this.app.listen ( port || 3000, callback )
   } 
 
-  public initializeModules ( modules: express.RequestHandler[] ) {
-    this.initializeHandlers ( modules )
+  public initializeRoutes ( routes: express.RequestHandler[] ) {
+    this.initializeHandlers ( routes )
   }
     
   public initializeMiddleware ( middleware: express.RequestHandler[] ) {
     this.initializeHandlers ( middleware ) 
   }
   
-  public initializeErrorHandlers ( errorHandlers: express.ErrorRequestHandler[] ) {
+  public initializeErrorHandlers ( errorHandlers: Array<express.ErrorRequestHandler | express.RequestHandler> ) {
     this.initializeHandlers ( errorHandlers )
   }
 
@@ -49,13 +49,11 @@ export const createApp = ( store : Store ) => {
     session ( { ...SESSION_OPTIONS, store } )
   ]
 
-  const errorHandlers = [ serverError ]
+  const errorHandlers = [ notFound, serverError ]
 
-  const modules = [ register ]
-  
   app.initializeMiddleware ( middleware )
   
-  app.initializeModules ( modules )
+  app.initializeRoutes ( routes )
 
   app.initializeErrorHandlers ( errorHandlers ) 
 

@@ -8,7 +8,7 @@
     "postup": "npm run dev",
     "stop": "docker-compose stop",
     "down": "docker-compose down",
-    "dev": "npm run dev --prefix api" 
+    "dev": "npm run dev --prefix api"
   },
   "keywords": [],
   "author": "",

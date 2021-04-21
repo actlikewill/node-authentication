@@ -1,14 +1,15 @@
 import  { Document, model, Schema } from 'mongoose'
-import { hash } from 'bcryptjs'
+import { compare, hash } from 'bcryptjs'
 import { BCRYPT_WORK_FACTOR } from '../config'
 
 interface UserDocument extends Document {
     email: string
     name: string
     password: string
+    matchesPassword: ( password: string ) => Promise<boolean>
 }
-
-const userSchema  = new Schema ( { 
+ 
+const userSchema = new Schema <UserDocument> ( { 
         email: String,
         name: String,
         password: String
@@ -18,10 +19,14 @@ const userSchema  = new Schema ( {
     } 
 )
 
-userSchema.pre <UserDocument> ( 'save', async function () { 
+userSchema.pre ( 'save', async function () { 
     if ( this.isModified ( 'password') ) {
         this.password = await hash ( this.password, BCRYPT_WORK_FACTOR )
     }
 } )
+
+userSchema.methods.matchesPassword  = function ( password : string ) {
+    return compare ( password, this.password ) 
+}
 
 export const User = model <UserDocument> ( 'User', userSchema )

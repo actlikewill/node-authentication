@@ -23,3 +23,9 @@ export class NotFound extends HttpError {
         super ( { status, message} ) 
     }
 }
+
+export class Unauthorized extends HttpError {
+    constructor ( { status, message } : ErrorOptions = { status: 401, message :'Unauthorized'} ) {
+        super ( { status, message} ) 
+    }
+}
